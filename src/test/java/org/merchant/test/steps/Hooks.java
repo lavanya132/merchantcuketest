@@ -19,6 +19,7 @@ public class Hooks {
 	public static final String USERNAME = System.getenv("SAUCE_USERNAME");
     public static final String ACCESS_KEY = System.getenv("SAUCE_ACCESS_KEY");
     public static final String URL = "https://" + USERNAME + ":" + ACCESS_KEY + "@ondemand.saucelabs.com:443/wd/hub";
+    public static final String GRID_URL = "http://localhost:4444/wd/hub";
     public static final String browser = System.getProperty("browser");
     public static WebDriver driver;
     public String commentInputText;
@@ -29,8 +30,10 @@ public class Hooks {
     	
     	if (browser != null && browser.equalsIgnoreCase("FIREFOX")) {
     		driver = new FirefoxDriver();
+    	} else if (browser != null && browser.equalsIgnoreCase("SAUCE")){
+    		setupSauce(scenario);
     	} else {
-            setupSauce(scenario);
+    		setupGrid(scenario);
     	}
     }
 
@@ -45,6 +48,19 @@ public class Hooks {
         caps.setCapability("build", SauceUtils.getBuildName());
 
         driver = new RemoteWebDriver(new URL(URL), caps);
+
+        sessionId = (((RemoteWebDriver) driver).getSessionId()).toString();
+	}
+	
+	private void setupGrid(Scenario scenario) throws FileNotFoundException, MalformedURLException {
+
+        DesiredCapabilities caps = null;
+        
+        caps=DesiredCapabilities.firefox();
+        caps.setBrowserName("firefox");
+
+
+        driver = new RemoteWebDriver(new URL(GRID_URL), caps);
 
         sessionId = (((RemoteWebDriver) driver).getSessionId()).toString();
 	}

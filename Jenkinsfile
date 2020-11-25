@@ -10,11 +10,8 @@ node {
    sh "${mvnHome}/bin/mvn clean compile"
    
    stage 'Test'
-   sauce('sauceconnect') {
-       sauceconnect(useGeneratedTunnelIdentifier: true, verboseLogging: true) {
-           sh "${mvnHome}/bin/mvn test"
-       }
-   }
+   sh "${mvnHome}/bin/mvn clean test"
+   
    stage 'Collect Results'
    step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/TEST-*.xml'])
    step([$class: 'CucumberReportPublisher', jsonReportDirectory: 'target/cucumber', fileIncludePattern: 'cucumber.json'])
