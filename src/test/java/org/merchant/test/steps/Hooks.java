@@ -6,6 +6,7 @@ import java.net.URL;
 
 import org.merchant.test.merchantcuketest.SauceUtils;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -13,6 +14,7 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 import cucumber.api.Scenario;
 import cucumber.api.java.After;
 import cucumber.api.java.Before;
+import io.github.bonigarcia.wdm.WebDriverManager;
 
 public class Hooks {
 	
@@ -29,7 +31,11 @@ public class Hooks {
     public void setUp(Scenario scenario) throws Exception {
     	
     	if (browser != null && browser.equalsIgnoreCase("FIREFOX")) {
+    		WebDriverManager.firefoxdriver().setup();
     		driver = new FirefoxDriver();
+    	}  else if (browser != null && browser.equalsIgnoreCase("CHROME")){
+    		WebDriverManager.chromedriver().setup();
+    		driver = new ChromeDriver();
     	} else if (browser != null && browser.equalsIgnoreCase("SAUCE")){
     		setupSauce(scenario);
     	} else {
@@ -68,11 +74,5 @@ public class Hooks {
     @After
     public void tearDown(Scenario scenario) throws Exception {
         driver.quit();
-        
-        if (browser != null && browser.equalsIgnoreCase("FIREFOX")) {
-        	
-        } else {
-        	 SauceUtils.UpdateResults(USERNAME, ACCESS_KEY, !scenario.isFailed(), sessionId);
-        }
     }
 }
